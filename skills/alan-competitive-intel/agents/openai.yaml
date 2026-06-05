@@ -1,0 +1,7 @@
+interface:
+  display_name: "Alan Competitive Intel"
+  short_description: "Analyse concurrentielle e-commerce — Meta Ads + TikTok, métriques sourcées, angles prouvés, rapport HTML"
+  brand_color: "#1877F2"
+  default_prompt: "Utilise $alan-competitive-intel pour analyser les concurrents de mon produit e-commerce et générer un rapport HTML avec les angles publicitaires prouvés."
+policy:
+  allow_implicit_invocation: true
