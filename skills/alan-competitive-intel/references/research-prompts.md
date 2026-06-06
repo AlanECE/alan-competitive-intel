@@ -62,26 +62,36 @@ Ne jamais inventer d'ads. Si aucune donnée accessible : noter "0 ads observés 
 
 Analyser les tendances publicitaires pour `{product_category}` sur TikTok.
 
-URL principale : `https://ads.tiktok.com/business/creativecenter/inspiration/topads/`
+Lancer `scripts/scrape_tiktok.py --trending --country {country} --industry {industry}`.
+Le script utilise uniquement des endpoints publics, sans API key ni auth requise.
 
-Chercher :
-1. Top Ads par industrie (Beauty / Health / Home / Fashion / Electronics selon le produit)
-2. Trending Products dans la catégorie correspondante
-3. Ads de `{competitor_page}` si présents
+### Donnees disponibles sans auth (via scrape_tiktok.py)
 
-Pour chaque ad TikTok analysé :
-- Format : In-feed / TopView / Spark Ads / UGC
-- Durée de la vidéo
-- Hook des 3 premières secondes
-- Type de créatif : founder-led / UGC / animation / démonstration produit
-- CTA visible
-- Durée d'activité estimée (si disponible)
-- Industrie / Catégorie
+- **Hashtags tendance** : post_count, view_count, trend_direction (hausse / baisse / stable)
+- **Topics tendance par industrie** : post_count, view_count, trend_direction
+- **Sons tendance** : usage_count, artiste, trend_direction
+- **Metadonnees de videos publiques** : titre, auteur (via `--video {url}`)
 
-Si Lightpanda disponible, scraper `scripts/scrape_tiktok.py`.
-Sinon, utiliser WebFetch sur les URLs TikTok Creative Center public.
+Interpreter ces signaux comme indicateurs d angles porteurs :
+- Un hashtag en forte hausse = angle emergent potentiellement sous-exploite
+- Un hashtag stable avec fort volume = angle etabli (risque de saturation)
 
----
+### Donnees non disponibles sans compte TikTok Ads
+
+- CTR des Top Ads, impressions, budget annonceur → afficher "Donnees indisponibles — compte TikTok Ads requis"
+- Ne jamais inventer ou estimer ces metriques.
+
+### Recherche complementaire (fallback ou enrichissement)
+
+Si le script echoue (rate limit, region) :
+1. Acceder manuellement : `https://ads.tiktok.com/business/creativecenter/inspiration/popular-trends/pc/en?region={country}`
+2. WebSearch : `TikTok ads {industry} {country} trending 2024`
+3. Chercher le compte TikTok des concurrents : `site:tiktok.com {brand}` et noter les hashtags utilises dans les descriptions publiques
+
+Pour chaque signal TikTok retenu, noter :
+- Source : `tiktok_cc_public_api` / `tiktok_oembed` / `websearch_fallback` / `user_provided`
+- Date d acces
+- Interpretation dans le contexte du produit analyse
 
 ## Métriques Revenus et Trafic
 
