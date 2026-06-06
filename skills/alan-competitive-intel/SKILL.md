@@ -99,11 +99,12 @@ Pour chaque concurrent identifié :
 
 Lire `references/research-prompts.md` → Section "TikTok Creative Center".
 
-Pour chaque concurrent :
-1. Chercher dans TikTok Creative Center Top Ads (`https://ads.tiktok.com/business/creativecenter/inspiration/topads/`)
-2. Extraire : format dominant, angle, durée d'activité estimée, industrie
-3. Identifier les hooks récurrents sur les ads long-running
+Lancer `scripts/scrape_tiktok.py --trending --country {country} --industry {industry}` si Python disponible.
 
+Données accessibles sans auth : hashtags tendance, topics, sons (post_count, view_count, trend_direction).
+Données non disponibles sans compte TikTok Ads : CTR des Top Ads, impressions, budget → afficher "Données indisponibles — compte TikTok Ads requis".
+
+Interpréter les hashtags tendance comme proxy d'angles : hashtag en hausse = angle émergent à investiguer.
 **Tâche 2d — Métriques revenus et trafic**
 
 Lire `references/performance-scoring.md`.
@@ -189,5 +190,8 @@ Retourner :
 - Reddit / forums publics
 - Presse publique (Google News)
 - App Store / Play Store public listings
+
+- TikTok Creative Center API publique (no-auth) : `https://ads.tiktok.com/business/creativecenter/api/public/trend/`
+- TikTok OEmbed : `https://www.tiktok.com/oembed`
 
 Sources interdites : données derrière login, APIs payantes, scraping avec bypass de rate limits.
