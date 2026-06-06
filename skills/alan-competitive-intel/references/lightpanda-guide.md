@@ -189,3 +189,52 @@ Utiliser `--wait-until networkidle` plutôt que `load`. Si toujours vide, la pag
 
 **Rate limit Meta**
 Espacer les requêtes : 5-10 secondes entre chaque page. Si bloqué : passer en mode `websearch_fallback` et le noter dans le rapport.
+---
+
+## TikTok Creative Center — Endpoints Publics (sans auth, sans Lightpanda)
+
+Certains endpoints du Creative Center retournent du JSON **sans authentification**.
+Ces endpoints sont appeles par le frontend quand on charge la page Popular Trends.
+Aucun cookie de session ni token TikTok Ads requis.
+
+### Endpoints publics confirmes
+
+```
+GET https://ads.tiktok.com/business/creativecenter/api/public/trend/hashtag/v2/
+  ?period=7&region=FR&limit=20&page=1
+
+GET https://ads.tiktok.com/business/creativecenter/api/public/trend/topic/list/v2/
+  ?period=7&region=FR&limit=20&page=1&industry=27101
+
+GET https://ads.tiktok.com/business/creativecenter/api/public/trend/sound/v2/
+  ?period=7&region=FR&limit=15&page=1
+```
+
+Headers requis pour imiter un navigateur :
+
+```python
+{
+    "User-Agent": "Mozilla/5.0 ... Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Referer": "https://ads.tiktok.com/business/creativecenter/inspiration/popular-trends/pc/en",
+    "Origin": "https://ads.tiktok.com",
+    "Sec-Fetch-Mode": "cors",
+}
+```
+
+### OEmbed TikTok (totalement public)
+
+```
+GET https://www.tiktok.com/oembed?url={video_url}
+```
+
+Retourne : titre, auteur, thumbnail. Aucune auth requise.
+Limite : pas de vues, likes, commentaires.
+
+### Ce qui reste derriere login
+
+- **Top Ads CTR / impressions** : `/creative_radar_api/v1/top_ads/v2/list` — requiert cookies TikTok Ads
+- **Keyword insights detailles** : requiert connexion compte Creative Center
+
+Utiliser `scripts/scrape_tiktok.py` pour tous les appels publics (Lightpanda non necessaire pour TikTok).
+Lightpanda reste utile pour Meta Ads Library et SimilarWeb.
