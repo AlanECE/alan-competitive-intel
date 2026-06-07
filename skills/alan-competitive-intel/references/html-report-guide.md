@@ -41,11 +41,18 @@ Ce rapport est destiné à des débutants. Trois règles non négociables :
 1. **Expliquer chaque acronyme / chiffre.** Après les chiffres de marché, prévoir un bloc « glossaire » qui définit en français simple tout sigle utilisé (GMV = Gross Merchandise Value = valeur totale des ventes brutes ; YoY = Year over Year = d'une année sur l'autre ; etc.). Ne jamais laisser un sigle non expliqué.
 2. **Analyser les chiffres comme un data-analyste.** Pour chaque chiffre clé, ajouter une colonne ou un encart « verdict » : est-ce bon ou mauvais, et pourquoi, en une phrase claire. Exemple : « +6 % de croissance trimestrielle = solide, car c'est ~2× la croissance de l'économie générale ». Donner du sens, pas juste le chiffre brut.
 3. **Top 3 produits juste après les chiffres**, avec, pour chacun :
-   - un **lien TikTok** (page hashtag, ex. `https://www.tiktok.com/tag/{produit}`) et un **lien Amazon réel** (récupéré via Lightpanda : `lightpanda fetch --dump html "https://www.amazon.com/s?k={produit}"` puis extraire le premier `/dp/{ASIN}` → `https://www.amazon.com/dp/{ASIN}`) ;
+   - un **lien TikTok** (page hashtag, ex. `https://www.tiktok.com/tag/{produit}`) et un **lien Amazon réel**.
+     - *Mode Terminal :* Lightpanda → `lightpanda fetch --dump html "https://www.amazon.com/s?k={produit}"` puis extraire le premier `/dp/{ASIN}` → `https://www.amazon.com/dp/{ASIN}`. Lightpanda fonctionne sur Amazon (testé).
+     - *Mode Web App :* `WebFetch` sur `https://www.amazon.com/s?k={produit}` pour récupérer le lien et le prix.
    - la **rémunération moyenne sourcée** (taux du programme marque + Amazon + TikTok Shop), avec la source et le gain estimé par vente au prix réel.
-   - Utiliser Lightpanda (voir `lightpanda-guide.md`) pour vérifier liens et prix Amazon. Lightpanda fonctionne sur Amazon (testé).
 
 Puis un **comparatif** des produits (tableau notes 1-5 sur revenus / viralité / facilité + 1 graphique simple).
+
+### Hiérarchie et couleur des fiches produits (corrige des défauts fréquents)
+
+- **Le titre de champ et le contenu ne doivent jamais avoir le même style.** Le label (« Le problème qu'il résout », « Rémunération moyenne »...) doit trancher nettement : petit, en MAJUSCULES, en gras, dans la couleur de catégorie. Le contenu : encre foncée, taille de lecture (~1rem), police de corps. On distingue label et réponse au premier coup d'œil.
+- **Une couleur par catégorie** (`--cat`), portée par le rang, le filet supérieur, les labels et les liens : anti-acné corail `#cf4329`, dupe luxe / maquillage violet `#7c3aed`, routine / soin teal `#0e7c86`, appareil / premium or `#b5790a`. Rendre la page vivante avec ces couleurs, sans tomber dans l'arc-en-ciel.
+- **Liens d'action légers**, pas de gros boutons pleins lourds : contour fin dans la couleur de catégorie, un seul lien rempli au maximum par fiche.
 
 ---
 
