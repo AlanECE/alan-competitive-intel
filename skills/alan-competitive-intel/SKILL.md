@@ -208,6 +208,11 @@ Pour chaque angle :
 
 Lire `references/html-report-guide.md` pour le template et les règles visuelles.
 
+**Design : viser simple, clair et beau, lisible par un novice.** Si le skill `impeccable` est installé (`.agents/skills/impeccable`), suivre ses règles (thème clair neutre, pas de bordure latérale colorée, pas de tiret cadratin dans le texte, contraste ≥ 4.5:1, un seul accent). Trois règles de clarté **obligatoires** (détaillées dans `html-report-guide.md`) :
+1. **Glossaire** : expliquer en français simple chaque acronyme utilisé (GMV, YoY, CAGR, DTC...).
+2. **Analyse data-analyste** : pour chaque chiffre clé, donner un verdict « bon / à surveiller / mauvais » et pourquoi, en une phrase.
+3. **Top 3 produits juste après les chiffres** : pour chacun, un lien TikTok + un lien Amazon réel (récupéré via Lightpanda), et la rémunération moyenne sourcée. Puis un comparatif des produits.
+
 Utiliser le script `scripts/generate_report.py` si Python est disponible, sinon générer le HTML directement.
 
 Sauvegarder le fichier : `rapport-{product_slug}-{YYYY-MM-DD}.html`
