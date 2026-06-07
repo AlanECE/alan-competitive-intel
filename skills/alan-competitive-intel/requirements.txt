@@ -1,0 +1,10 @@
+# Alan Competitive Intel — Dépendances Python
+# Installation: pip install -r requirements.txt
+# Tout est gratuit, aucune API key requise.
+
+# Google Trends — courbes de tendance, requêtes associées, trending du jour
+pytrends>=4.9.0
+
+# Meta Ads Library — scraping via Lightpanda CDP (optionnel)
+# Si non installé, le skill utilise WebSearch comme fallback automatiquement.
+playwright>=1.40.0
