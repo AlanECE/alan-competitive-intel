@@ -7,6 +7,26 @@ description: Analyse concurrentielle e-commerce pour Alan — Meta Ads + TikTok,
 
 Skill d'analyse concurrentielle e-commerce avec une posture d'expert ROAS.
 
+## Plug & Play — Aucune configuration requise
+
+Installation en 2 commandes :
+
+```bash
+cp -R skills/alan-competitive-intel ~/.claude/plugins/alan-competitive-intel/
+cd ~/.claude/plugins/alan-competitive-intel && pip install -r requirements.txt
+```
+
+Toutes les sources de données sont **publiques et gratuites** :
+
+| Source | Données | Auth requise |
+|---|---|---|
+| TikTok Creative Center | Hashtags, topics, sons tendance | ❌ Aucune |
+| Google Trends (pytrends) | Courbe 12 mois, requêtes associées | ❌ Aucune |
+| Meta Ads Library | Ads actives, durée, angles | ❌ Aucune (Lightpanda optionnel) |
+| SimilarWeb public | Trafic estimé, canaux | ❌ Aucune |
+| TikTok OEmbed | Métadonnées vidéos | ❌ Aucune |
+| Crunchbase / LinkedIn / Presse | Signaux business | ❌ Aucune |
+
 **Principe absolu : aucun contenu sans métrique. Aucun angle sans preuve de 60+ jours actifs sur au moins 2 concurrents.**
 
 Ce skill produit un rapport HTML autonome contenant :
@@ -120,9 +140,20 @@ Marquer chaque donnée avec son niveau de confiance : `[HIGH]` `[MEDIUM]` `[LOW]
 
 **Tâche 2e — Signaux de viralité et tendances**
 
-- Google Trends : courbe d'intérêt sur 12 mois pour le produit
-- Volume de recherche approximatif (Google Keyword Planner public si accessible)
-- Présence Reddit / forums publics : verbatims utilisateurs, objections récurrentes
+Lancer `scripts/scrape_google_trends.py --keyword {product_name} --country {country}` si Python disponible (pytrends requis).
+
+Données disponibles sans auth :
+- Courbe d'intérêt sur 12 mois (0-100, normalisé)
+- Direction : hausse / stable / baisse
+- Requêtes associées en hausse = angles émergents à investiguer
+
+Croiser avec les hashtags TikTok (Tâche 2c) :
+- Hashtag TikTok "increase" + Google Trends "hausse" → signal fort, angle prioritaire
+- Google Trends "baisse" → signal précurseur de saturation ou fin de cycle
+
+Compléments :
+- Reddit / forums publics : verbatims utilisateurs, objections récurrentes
+- Volume recherche Google Keyword Planner public si accessible
 
 ### Étape 3 — Analyse et scoring
 
