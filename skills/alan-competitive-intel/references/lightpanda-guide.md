@@ -237,4 +237,47 @@ Limite : pas de vues, likes, commentaires.
 - **Keyword insights detailles** : requiert connexion compte Creative Center
 
 Utiliser `scripts/scrape_tiktok.py` pour tous les appels publics (Lightpanda non necessaire pour TikTok).
-Lightpanda reste utile pour Meta Ads Library et SimilarWeb.
+Lightpanda reste **la methode privilegiee et la plus efficace** pour Meta Ads Library et SimilarWeb (pages JS-lourdes) : ~16x moins de RAM et ~9x plus rapide que Chrome headless. A utiliser en premier des qu'il est disponible.
+
+---
+
+## Option avancee — TikTok Ads Library reelle via Apify (opt-in, token utilisateur)
+
+Pour obtenir de **vraies metriques publicitaires TikTok** (impressions, reach, regions, ciblage, part createurs/affilies), le skill peut utiliser l'actor Apify `silva95gustavo/tiktok-ads-scraper` sur la TikTok Commercial Content Library (`https://library.tiktok.com/ads`).
+
+### Activation plug-and-play (pilotee par l'utilisateur)
+
+- Active **uniquement** si l'utilisateur fournit un token Apify (mentionne dans son message, ou via `APIFY_TOKEN` dans l'environnement).
+- **Aucun token n'est stocke dans le repo.** Le script `scripts/scrape_tiktok_ads.py` lit `APIFY_TOKEN` au runtime. Repo public => jamais de cle en dur.
+- Sans token : mode `no_token` (fallback propre avec lien manuel). Le skill reste gratuit et plug-and-play par defaut.
+
+### Appel
+
+```bash
+export APIFY_TOKEN="apify_api_..."   # fourni par l'utilisateur au runtime
+python3 scripts/scrape_tiktok_ads.py --advertisers "CeraVe,The Ordinary,NuFACE" --region all --limit 25
+```
+
+### Comment ca marche (recherche par nom d'annonceur)
+
+L'actor navigue des URLs de la library. La recherche fiable se fait **par nom d'annonceur** (substring, fuzzy) :
+
+```
+https://library.tiktok.com/ads?region=all&start_time={ms}&end_time={ms}&query_type=1&sort_type=create_time,desc&adv_name={MARQUE}
+```
+
+- `query_type=1` + `adv_name` = recherche par annonceur. La recherche par mot-cle de contenu (`query=skincare`) ne retourne rien.
+- Appel HTTP direct (sans CLI) : `POST https://api.apify.com/v2/acts/silva95gustavo~tiktok-ads-scraper/run-sync-get-dataset-items?token=...` avec `{startUrls, proxyConfiguration, skipDetails:false, shouldDownloadVideos:false, resultsLimit}`.
+
+### Champs reels retournes (par annonce)
+
+`firstShown`, `lastShown`, `impressions{lowerBound,upperBound}`, `reach`, `regionStats[]`, `targeting{audienceSize,ageRanges,genders,interests}`, `advertiserName`, `videos[]`.
+
+### Deux mises en garde critiques
+
+1. ⚠️ **Perimetre = UE/EEE (transparence DSA), pas USA.** Les impressions sont europeennes. A lire comme signal de strategie creative, pas comme volume US.
+2. ⚠️ **Longevite != Winner Rules.** `firstShown`/`lastShown` sont des fenetres de reporting DSA courtes (quelques jours), PAS la duree de campagne. Ne JAMAIS appliquer Hero/Evergreen ici — ces regles sont concues pour la Meta Ads Library. Ici, exploiter : intensite publicitaire, reach, regions, demographie, et **part createurs/affilies** (preuve de monetisation affiliee).
+
+### Astuce qualite
+
+La recherche par nom est fuzzy : filtrer les faux-positifs (ex. "CeraVe" peut matcher "ceramiche..."). Verifier `advertiserName` et privilegier les comptes business (INC/LTD/EUROPE/OFFICIAL) ou les marques officielles. Une part elevee de handles minuscules = createurs/affilies (signal recherche).
