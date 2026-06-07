@@ -4,33 +4,48 @@ Spécifications pour générer le rapport HTML autonome. CSS inline, JS embarqu�
 
 ---
 
-## Principes visuels
+## Principes visuels (design impeccable — simple, clair, lisible)
 
-**Palette :**
-- Fond principal : `#0a0a0f` (quasi-noir)
-- Fond cards : `#12121a`
-- Fond section : `#1a1a2e`
-- Texte principal : `#e8e8f0`
-- Texte secondaire : `#8888a8`
-- Accent Meta : `#1877F2` (bleu officiel)
-- Accent TikTok : `#ff0050` (rose/rouge officiel)
-- Vert succès / white space : `#00c896`
-- Orange warning / saturé : `#ff8c42`
-- Rouge danger / non-validé : `#ff4757`
-- Jaune neutre : `#ffd32a`
-- Bordures : `#2a2a3e`
+Objectif : **simple mais beau, lisible par un novice**. Si le skill `impeccable` est installé (`.agents/skills/impeccable`), suivre ses règles. Sinon, appliquer le résumé ci-dessous.
+
+**Thème clair par défaut** (plus accessible et plus simple qu'un thème sombre pour un débutant) :
+- Fond : `#f6f6f8` (gris très clair neutre, **pas** de crème/beige : c'est le défaut « IA » à éviter)
+- Surfaces : `#ffffff` · Bordures : `#e3e3ea`
+- Texte principal : `#1a1a21` (quasi-noir, fort contraste) · Texte secondaire : `#56565f`
+- Un seul accent franc : `#cf4329` (corail-rouge éditorial, pas le rose « beauté » cliché)
+- Couleurs sémantiques (verdicts data) : vert `#0f7048`, ambre `#8a5d00`, rouge `#b1372a`, chacune sur fond teinté clair
 
 **Typographie :**
-- Font stack : `'Inter', 'Segoe UI', system-ui, sans-serif`
-- Titres sections : 20px bold, uppercase tracking
-- Données métriques : 28-36px bold, accent color
-- Labels : 11px uppercase, letter-spacing 0.1em, secondary color
+- Display (titres) : un serif éditorial (`'Fraunces'`, fallback Georgia). Corps : `system-ui, -apple-system, 'Segoe UI', sans-serif`. Max 3 familles.
+- Hiérarchie par taille + graisse (≥1.25 entre niveaux), jamais par couleur seule.
+- **Jamais de corps de texte en MAJUSCULES.** Majuscules réservées aux courts labels (≤4 mots).
+- Corps : 65-75 caractères par ligne max. `text-wrap:balance` sur les titres.
 
 **Layout :**
-- Max-width : 1200px, centré
-- Padding container : 24px mobile, 40px desktop
-- Cards avec border-radius 12px
-- Séparateurs subtils avec gradient
+- Max-width ~960px, centré. Rythme d'espacement varié.
+- Cards : border-radius 12-18px. Jamais de cards imbriquées.
+- Contraste du corps de texte ≥ 4.5:1 (vérifier). Pas de gris clair « élégant » illisible.
+
+**Interdits absolus (tells « IA », refuser et réécrire) :**
+- **Bordure latérale colorée** (`border-left`/`border-right` > 1px comme accent sur cards/encarts). Utiliser une bordure complète + fond teinté à la place.
+- **Texte en dégradé** (`background-clip:text`). Une seule couleur pleine.
+- **Glassmorphisme décoratif**, le template « gros chiffre + petit label » répété, les grilles de cards identiques, les eyebrows en petites majuscules au-dessus de chaque section.
+- **Tirets cadratins (—) dans le texte.** Utiliser virgule, deux-points, point, parenthèses, ou le point médian `·`.
+
+---
+
+## Règles de clarté pour novices (obligatoires)
+
+Ce rapport est destiné à des débutants. Trois règles non négociables :
+
+1. **Expliquer chaque acronyme / chiffre.** Après les chiffres de marché, prévoir un bloc « glossaire » qui définit en français simple tout sigle utilisé (GMV = Gross Merchandise Value = valeur totale des ventes brutes ; YoY = Year over Year = d'une année sur l'autre ; etc.). Ne jamais laisser un sigle non expliqué.
+2. **Analyser les chiffres comme un data-analyste.** Pour chaque chiffre clé, ajouter une colonne ou un encart « verdict » : est-ce bon ou mauvais, et pourquoi, en une phrase claire. Exemple : « +6 % de croissance trimestrielle = solide, car c'est ~2× la croissance de l'économie générale ». Donner du sens, pas juste le chiffre brut.
+3. **Top 3 produits juste après les chiffres**, avec, pour chacun :
+   - un **lien TikTok** (page hashtag, ex. `https://www.tiktok.com/tag/{produit}`) et un **lien Amazon réel** (récupéré via Lightpanda : `lightpanda fetch --dump html "https://www.amazon.com/s?k={produit}"` puis extraire le premier `/dp/{ASIN}` → `https://www.amazon.com/dp/{ASIN}`) ;
+   - la **rémunération moyenne sourcée** (taux du programme marque + Amazon + TikTok Shop), avec la source et le gain estimé par vente au prix réel.
+   - Utiliser Lightpanda (voir `lightpanda-guide.md`) pour vérifier liens et prix Amazon. Lightpanda fonctionne sur Amazon (testé).
+
+Puis un **comparatif** des produits (tableau notes 1-5 sur revenus / viralité / facilité + 1 graphique simple).
 
 ---
 
@@ -49,15 +64,14 @@ Spécifications pour générer le rapport HTML autonome. CSS inline, JS embarqu�
 <body>
 
   <!-- 1. HEADER -->
-  <!-- 2. SIGNAL MARCHÉ -->
-  <!-- 3. MATRICE CONCURRENTS -->
-  <!-- 4. ANALYSE META ADS -->
-  <!-- 5. ANALYSE TIKTOK ADS -->
-  <!-- 6. CARTE DES ANGLES -->
-  <!-- 7. MÉTRIQUES REVENUS -->
-  <!-- 8. WHITE SPACES -->
-  <!-- 9. ANGLES RECOMMANDÉS (conditionnel) -->
-  <!-- 10. SOURCES & MÉTHODOLOGIE -->
+  <!-- 2. LES CHIFFRES + ANALYSE DATA-ANALYSTE (chaque chiffre : traduction simple + verdict bon/à surveiller/mauvais) -->
+  <!-- 3. GLOSSAIRE (acronymes expliqués : GMV, YoY, CAGR, DTC, commission, cookie...) -->
+  <!-- 4. TOP 3 PRODUITS (juste après les chiffres : lien TikTok + lien Amazon réels, commission moyenne sourcée) -->
+  <!-- 5. COMPARATIF DES PRODUITS (tableau + 1 graphique simple) -->
+  <!-- 6. MATRICE CONCURRENTS / ANALYSE META ADS + TIKTOK ADS -->
+  <!-- 7. CARTE DES ANGLES + WHITE SPACES -->
+  <!-- 8. ANGLES RECOMMANDÉS (conditionnel) -->
+  <!-- 9. SOURCES & MÉTHODOLOGIE -->
 
   <script>/* JS Charts INLINE */</script>
 </body>
