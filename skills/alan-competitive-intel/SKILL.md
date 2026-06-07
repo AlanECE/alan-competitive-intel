@@ -65,6 +65,40 @@ Ce skill produit un rapport HTML autonome contenant :
 
 ---
 
+## Deux modes selon l'environnement (détection automatique)
+
+Le skill fonctionne dans deux contextes et s'adapte **tout seul**. Détecter l'environnement au démarrage : un terminal / outil Bash est-il disponible ?
+
+### Mode Terminal (complet) — dès que Bash/Docker/Python sont accessibles
+
+C'est le mode préféré. Quand le terminal est disponible, l'utiliser et lancer les outils lourds :
+- **Lightpanda via Docker** pour les pages JS-lourdes (Meta Ads Library, SimilarWeb, Amazon). Le démarrer dès que possible :
+  `docker run -d --name lightpanda -p 127.0.0.1:9222:9222 lightpanda/browser:nightly`
+- **Scripts Python** : `scrape_tiktok.py`, `scrape_google_trends.py`, et `scrape_tiktok_ads.py` (si un token Apify est fourni au runtime).
+- **WebSearch** pour la recherche large.
+- Récupération des liens/prix Amazon réels via Lightpanda (`fetch --dump html`).
+
+### Mode Web App (restreint) — pas de terminal ni de Docker (ex. application web Claude)
+
+Quand il n'y a ni terminal, ni Docker, ni scripts exécutables :
+- **Pas de Lightpanda, pas de scripts Python.** Ne pas tenter de lancer Docker.
+- Utiliser **WebFetch** pour charger directement les pages publiques : Meta Ads Library, TikTok Creative Center, Amazon (liens produits + prix), SimilarWeb, Google Trends, presse.
+- Si WebSearch est disponible, l'utiliser ; sinon s'appuyer sur WebFetch + les URLs fournies par l'utilisateur.
+- Si une page JS-lourde ne rend rien via WebFetch, demander à l'utilisateur de coller le contenu visible (mode `user_provided`).
+
+| Besoin | Mode Terminal | Mode Web App |
+|---|---|---|
+| Pages JS-lourdes (Meta Ads, SimilarWeb) | Lightpanda (Docker) | WebFetch, sinon collage utilisateur |
+| Liens / prix Amazon | Lightpanda `fetch` | WebFetch sur `amazon.com/s?k=...` |
+| TikTok hashtags/sons | `scrape_tiktok.py` | WebFetch endpoints publics |
+| Google Trends | `scrape_google_trends.py` | WebFetch `trends.google.com` |
+| TikTok Ads réelles (si token Apify) | `scrape_tiktok_ads.py` | API Apify via WebFetch si possible, sinon ignorer |
+| Recherche large | WebSearch | WebSearch si dispo, sinon WebFetch ciblé |
+
+**Toujours indiquer le mode et la méthode d'extraction dans le rapport** (`mode_terminal` / `mode_webapp`, et `lightpanda` / `webfetch` / `user_provided`).
+
+---
+
 ## Modes d'exécution
 
 ### Mode A — Analyse Produit (input fourni)
@@ -108,7 +142,7 @@ Identifier le mode (A ou B) à partir du message utilisateur. Si Mode A, vérifi
 
 ### Étape 2 — Scraping et recherche (lancer en parallèle si subagents disponibles)
 
-Lire `references/lightpanda-guide.md` pour choisir la méthode de scraping optimale. **Lightpanda est la méthode privilégiée et la plus efficace** pour les pages JS-lourdes (Meta Ads Library, SimilarWeb) — bien plus rapide et léger que Chrome headless. Si l'utilisateur a fourni un token Apify, ajouter la Tâche 2c-bis pour des métriques TikTok Ads réelles.
+D'abord, **détecter le mode** (voir « Deux modes selon l'environnement »). En Mode Terminal, lire `references/lightpanda-guide.md` : **Lightpanda (via Docker) est la méthode privilégiée et la plus efficace** pour les pages JS-lourdes (Meta Ads Library, SimilarWeb, Amazon), bien plus rapide et léger que Chrome headless. En Mode Web App, remplacer Lightpanda et les scripts par **WebFetch**. Si l'utilisateur a fourni un token Apify (Mode Terminal), ajouter la Tâche 2c-bis pour des métriques TikTok Ads réelles.
 
 **Tâche 2a — Identification des concurrents (Mode A)**
 
