@@ -56,12 +56,15 @@ Ce skill produit un rapport HTML autonome contenant :
 
 ## Non-négociables
 
+- **Intemporel, aucun préréglage.** Ne jamais supposer une niche, ni réutiliser des chiffres d'exemple, ni des données mémorisées. Le skill peut être exécuté à n'importe quelle date : **toujours extraire les métriques RÉELLES et ACTUELLES de la période en cours** (utiliser la date système comme référence). Les niches, chiffres et exemples cités dans la doc ne sont que des illustrations, jamais des valeurs à recopier. Aucune niche n'est codée en dur (ni beauté, ni autre).
+- **Métriques réelles et précises.** Extraire les vrais chiffres (GMV, croissance, parts, prix, commissions, trafic) via les sources publiques, en priorité avec **Lightpanda** (gratuit, à utiliser largement, voir Mode Terminal). Jamais d'estimation présentée comme un fait.
+- **Analyse en synergie, pas chiffre par chiffre.** Un bouquet de métriques se lit ensemble : croiser croissance + part de canal + commission + saturation + tendance pour produire une **lecture d'ensemble** et une conclusion, comme un data-analyste. Un verdict isolé par chiffre ne suffit pas.
 - Ne jamais inventer de métriques. Si la donnée n'est pas disponible publiquement, afficher "Données indisponibles" avec la source consultée.
 - Ne jamais recommander un angle sans preuve : 2+ concurrents avec ads actifs 60+ jours sur cet angle.
 - Ne jamais copier les textes publicitaires de concurrents. Extraire les patterns, pas les verbatims.
 - Toujours citer URL + date d'accès pour chaque donnée factuelle.
-- Ne pas inventer de revenus, trafic, ou ROAS. Utiliser uniquement SimilarWeb public, Crunchbase, LinkedIn, presse, rapports publics.
-- L'output est toujours un fichier HTML autonome (CSS inline + JS embarqué).
+- Ne pas inventer de revenus, trafic, ou ROAS. Utiliser uniquement les sources publiques (SimilarWeb, Crunchbase, LinkedIn, presse, best-sellers, bibliothèques d'ads).
+- L'output est toujours un fichier HTML autonome (CSS inline + JS embarqué), **propre, avec un mode clair ET un mode sombre** (bouton de bascule, voir `html-report-guide.md`).
 
 ---
 
@@ -72,11 +75,11 @@ Le skill fonctionne dans deux contextes et s'adapte **tout seul**. Détecter l'e
 ### Mode Terminal (complet) — dès que Bash/Docker/Python sont accessibles
 
 C'est le mode préféré. Quand le terminal est disponible, l'utiliser et lancer les outils lourds :
-- **Lightpanda via Docker** pour les pages JS-lourdes (Meta Ads Library, SimilarWeb, Amazon). Le démarrer dès que possible :
+- **Lightpanda via Docker — gratuit, à utiliser largement et sans hésitation** pour obtenir des métriques réelles sur toute page JS-lourde : Meta Ads Library, SimilarWeb, Amazon (liens + prix), TikTok Creative Center / TikTok Shop, classements best-sellers, pages produits, comparateurs de commissions. Le démarrer dès que possible :
   `docker run -d --name lightpanda -p 127.0.0.1:9222:9222 lightpanda/browser:nightly`
+  puis `lightpanda fetch --dump html "<url>"` (ou markdown). C'est la source n°1 de chiffres réels et précis.
 - **Scripts Python** : `scrape_tiktok.py`, `scrape_google_trends.py`, et `scrape_tiktok_ads.py` (si un token Apify est fourni au runtime).
-- **WebSearch** pour la recherche large.
-- Récupération des liens/prix Amazon réels via Lightpanda (`fetch --dump html`).
+- **WebSearch** pour la recherche large et le recoupement des chiffres.
 
 ### Mode Web App (restreint) — pas de terminal ni de Docker (ex. application web Claude)
 
@@ -101,21 +104,33 @@ Quand il n'y a ni terminal, ni Docker, ni scripts exécutables :
 
 ## Modes d'exécution
 
-### Mode A — Analyse Produit (input fourni)
+Identifier le cas d'entrée à partir du message utilisateur. Trois cas, exemples réels de prompts :
 
-Déclenché quand l'utilisateur fournit un produit, une URL, ou une liste de produits.
+| Le message utilisateur ressemble à... | Cas | Ce qu'on fait |
+|---|---|---|
+| « je n'ai pas de niche ni de produit, fais-moi une recherche sur les meilleurs produits » | **B — Découverte** | Trouver le **Top 3 niches** (données réelles actuelles), puis le **Top 3 produits** de la niche n°1 |
+| « je veux me lancer dans la niche complément alimentaire, donne-moi une liste de produits à tester » | **A2 — Niche fournie** | **Sauter le Top 3 niches.** Analyser directement CETTE niche et sortir une liste de produits à tester (fiches standard) |
+| « analyse ce produit / cette URL / ces concurrents » | **A1 — Produit fourni** | Analyser le produit + ses concurrents (angles, Winner Rules) |
+
+La niche peut être **n'importe laquelle** (compléments, maison, tech, animalerie, fitness...), pas seulement la beauté. Aucune niche par défaut.
+
+### Mode A1 — Analyse Produit (produit/URL fourni)
 
 Collecte les champs suivants avant de démarrer :
 - `product_name` : nom ou URL du produit (obligatoire)
-- `market` : niche + géographie (défaut : France)
-- `competitors` : optionnel — si absent, le skill les trouve automatiquement via web search
+- `market` : niche + géographie (demander si absent ; pas de défaut géographique imposé)
+- `competitors` : optionnel — si absent, le skill les trouve automatiquement
 - `price_range` : fourchette de prix public si connu
 
-Si un champ critique manque, poser **une seule question groupée** et continuer avec des valeurs par défaut.
+Si un champ critique manque, poser **une seule question groupée** et continuer.
 
-### Mode B — Découverte (aucun produit/niche)
+### Mode A2 — Niche fournie (pas de produit précis)
 
-Déclenché quand l'utilisateur n'a pas d'idée de produit ou de niche. Dans ce cas, faire l'effort de **trouver la niche soi-même**, puis dérouler le format standard.
+Déclenché quand l'utilisateur donne une niche mais pas de produit (« je veux me lancer dans X, donne des produits à tester »). **Ne pas refaire le Top 3 niches** : la niche est imposée. Sortir directement le **Top 3 produits** de cette niche (fiches standard : hook, rémunération par plateforme, prompts créatifs), avec données réelles actuelles. Puis comparatif.
+
+### Mode B — Découverte (aucun produit ni niche)
+
+Déclenché quand l'utilisateur n'a ni produit ni niche (« fais-moi une recherche sur les meilleurs produits »). Faire l'effort de **trouver la niche soi-même** avec des données réelles, puis dérouler le format standard.
 
 **Étape B1 — Top 3 niches.** Classer 3 niches par performance réelle (GMV / croissance, sources publiques : FastMoss, Accio, TikTok Shop stats). **Priorité absolue aux produits physiques** : ils se démontrent en vidéo (avant/après, unboxing, application), là où un logiciel ne se filme pas. Un produit de type logiciel / digital n'est retenu qu'en dernier recours (même si ses commissions sont plus élevées, 30-50 %). Présenter les 3 niches avec leur métrique sourcée et désigner la n°1.
 
