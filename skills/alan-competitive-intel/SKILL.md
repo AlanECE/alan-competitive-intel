@@ -115,22 +115,23 @@ Si un champ critique manque, poser **une seule question groupée** et continuer 
 
 ### Mode B — Découverte (aucun produit/niche)
 
-Déclenché quand l'utilisateur n'a pas d'idée de produit ou de niche.
+Déclenché quand l'utilisateur n'a pas d'idée de produit ou de niche. Dans ce cas, faire l'effort de **trouver la niche soi-même**, puis dérouler le format standard.
 
-Rechercher automatiquement les produits e-commerce physiques rentables via :
-- TikTok Creative Center → trending products e-commerce
+**Étape B1 — Top 3 niches.** Classer 3 niches par performance réelle (GMV / croissance, sources publiques : FastMoss, Accio, TikTok Shop stats). **Priorité absolue aux produits physiques** : ils se démontrent en vidéo (avant/après, unboxing, application), là où un logiciel ne se filme pas. Un produit de type logiciel / digital n'est retenu qu'en dernier recours (même si ses commissions sont plus élevées, 30-50 %). Présenter les 3 niches avec leur métrique sourcée et désigner la n°1.
+
+**Étape B2 — Top 3 produits de la niche n°1.** Pour la niche gagnante, sortir le top 3 produits via :
+- TikTok Creative Center / TikTok Shop best-sellers → produits tendance
 - Meta Ads Library → niches avec >5 annonceurs actifs avec ads 30+ jours
 - Google Trends → tendances ascendantes (12 derniers mois)
 - Amazon Best Sellers + Movers & Shakers (publics)
-- Signaux AliExpress / DSers trending (publics)
 
 Critères de sélection pour retenir un produit :
-- ≥3 annonceurs actifs avec ads ≥30 jours
-- Marge brute estimée >40% (prix vente public vs prix fournisseur public estimé)
+- ≥3 annonceurs actifs avec ads ≥30 jours (ou forte présence créateurs/affiliés)
+- Marge / commission exploitable, prix accessible (forte conversion)
 - Potentiel viral : contenu démonstratif, before/after, transformation visible
 - Pas de marché saturé (>20 annonceurs Evergreen = rouge)
 
-Présenter 3-5 opportunités classées avant de lancer l'analyse complète.
+Chaque produit du top 3 suit le **format standard de fiche produit** (voir Étape 4 et `html-report-guide.md`) : hook, rémunération par plateforme (% × prix = gain), et deux prompts créatifs (photo + vidéo UGC).
 
 ---
 
@@ -242,10 +243,19 @@ Pour chaque angle :
 
 Lire `references/html-report-guide.md` pour le template et les règles visuelles.
 
-**Design : viser simple, clair et beau, lisible par un novice.** Si le skill `impeccable` est installé (`.agents/skills/impeccable`), suivre ses règles (thème clair neutre, pas de bordure latérale colorée, pas de tiret cadratin dans le texte, contraste ≥ 4.5:1, un seul accent). Trois règles de clarté **obligatoires** (détaillées dans `html-report-guide.md`) :
+**Format standard : tout rapport a la même structure, quelle que soit la niche.** Ordre imposé : (1) chiffres marché + verdict analyste, (2) Top 3 niches si pas de produit fourni, (3) glossaire, (4) Top 3 produits de la niche n°1, (5) comparatif, (6) données réelles, (7) sources.
+
+**Design : viser simple, clair et beau, lisible par un novice.** Si le skill `impeccable` est installé (`.agents/skills/impeccable`), suivre ses règles (thème clair neutre, pas de bordure latérale colorée, pas de tiret cadratin dans le texte, contraste ≥ 4.5:1, une couleur par catégorie de produit). Règles **obligatoires** (détaillées dans `html-report-guide.md`) :
 1. **Glossaire** : expliquer en français simple chaque acronyme utilisé (GMV, YoY, CAGR, DTC...).
 2. **Analyse data-analyste** : pour chaque chiffre clé, donner un verdict « bon / à surveiller / mauvais » et pourquoi, en une phrase.
-3. **Top 3 produits juste après les chiffres** : pour chacun, un lien TikTok + un lien Amazon réel (récupéré via Lightpanda), et la rémunération moyenne sourcée. Puis un comparatif des produits.
+3. **Top 3 niches** (si aucun produit fourni) : niches classées par perf, priorité au physique (cf. Mode B).
+4. **Fiche produit standard** pour chacun du Top 3, identique d'une niche à l'autre :
+   - **Hook** : accroche des 3 premières secondes (en anglais si cible US, + traduction).
+   - **Rémunération par plateforme** : un mini-tableau `Plateforme | Taux % | Gain par vente` où gain = taux × prix réel (ex. TikTok Shop 18 % × 13 $ = 2,34 $), plus une projection « à 100 ventes/mois ≈ X $ ». Toujours sourcer les taux.
+   - **Lien TikTok** (hashtag) + **lien Amazon réel** (Lightpanda en Mode Terminal, WebFetch en Mode Web App).
+   - **Deux prompts créatifs** : un prompt photo (image à générer) et un prompt vidéo UGC (script de tournage complet : décor, lumière, cadrage, regard, et CE QUE LA CRÉATRICE DIT mot à mot). Chacun accessible via un **bouton « + »** ouvrant une **popup** contenant le prompt dans un `<textarea>` éditable (= modifier) + un bouton **Copier**. Implémentation : `<dialog>` natif réutilisable, objet JS `PROMPTS` (clé `{produit}-photo` / `{produit}-video`), bouton `.prompt-btn` avec `data-key`. Voir le composant dans `html-report-guide.md`.
+   - **Sourcer le choix du format de créatif.** Ne pas inventer : choisir le format d'après ce qui convertit pour ce type de produit (avant/après pour résultat visible, démonstration, unboxing pour la curiosité, GRWM/tutoriel, hypermotion + jeux de lumière pour un produit tech/objet). Citer la source du format dans la popup (« Pourquoi ce format »).
+5. **Comparatif** des produits (notes 1-5) puis le reste.
 
 Utiliser le script `scripts/generate_report.py` si Python est disponible, sinon générer le HTML directement.
 
