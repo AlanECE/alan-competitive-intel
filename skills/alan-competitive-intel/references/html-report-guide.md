@@ -54,6 +54,34 @@ Puis un **comparatif** des produits (tableau notes 1-5 sur revenus / viralité /
 - **Une couleur par catégorie** (`--cat`), portée par le rang, le filet supérieur, les labels et les liens : anti-acné corail `#cf4329`, dupe luxe / maquillage violet `#7c3aed`, routine / soin teal `#0e7c86`, appareil / premium or `#b5790a`. Rendre la page vivante avec ces couleurs, sans tomber dans l'arc-en-ciel.
 - **Liens d'action légers**, pas de gros boutons pleins lourds : contour fin dans la couleur de catégorie, un seul lien rempli au maximum par fiche.
 
+### Contenu standard d'une fiche produit (identique d'une niche à l'autre)
+
+Chaque produit du Top 3 contient, dans cet ordre :
+1. Titre + puce de catégorie (couleur `--cat`).
+2. Le problème qu'il résout / Pourquoi ça marche en vidéo courte.
+3. **Hook** : accroche des 3 premières secondes, en anglais si cible US, avec traduction FR en dessous.
+4. **Rémunération par plateforme** : mini-tableau `Plateforme | Taux | Gain par vente`, gain = taux × prix réel, plus une projection « à 100 ventes/mois ≈ X $ ». Sourcer les taux.
+5. **Liens** : Amazon réel (Lightpanda ou WebFetch) + TikTok hashtag.
+6. **Deux prompts créatifs** : bouton photo et bouton vidéo UGC, chacun ouvrant une popup.
+
+### Composant « prompt créatif » (bouton + → popup éditable + copier)
+
+- Bouton : `<button class="prompt-btn" data-key="{produit}-photo"><span class="plus">+</span></button>` (et `-video`).
+- Un seul `<dialog class="modal" id="promptModal">` réutilisable, avec : titre, type, encart « Pourquoi ce format » (source), `<textarea>` éditable (= **modifier**), bouton **Copier** (clipboard API + fallback `execCommand`), bouton Fermer. Fermeture aussi au clic sur le backdrop.
+- Données dans un objet JS `PROMPTS` : `{ '{produit}-photo': {title, type, why, text}, ... }`. Remplir le textarea avec `.value` au clic.
+- **Prompt photo** = prompt d'image à générer (outil type GPT Image 2 / Nano Banana), 9:16, edge-to-edge, sans watermark.
+- **Prompt vidéo UGC** = script de tournage complet : format + durée + ratio, décor, lumière, caméra, regard, look, puis un découpage plan par plan avec **ce que la créatrice DIT mot à mot** (dialogue en anglais si cible US), le texte à l'écran, et un conseil clé.
+
+### Sourcer le format de chaque créatif (pas de magie)
+
+Choisir le format d'après ce qui **convertit réellement** pour ce type de produit, et citer la source dans la popup :
+- résultat visible (skincare, nettoyage) → **avant/après** (le plus convertissant) ;
+- maquillage / dupe → **démonstration + comparaison côte à côte** ;
+- routine → **GRWM / tutoriel** ;
+- curiosité produit → **unboxing** ;
+- objet tech (casque, gadget) → **hypermotion + jeux de lumière**, macro, ASMR.
+Réfs utiles : la démonstration apparaît dans ~4/10 pubs beauté gagnantes, l'UGC dans ~37 % des meilleures pubs (Evolut, Top Beauty Ads 2026).
+
 ---
 
 ## Structure du HTML
@@ -72,8 +100,9 @@ Puis un **comparatif** des produits (tableau notes 1-5 sur revenus / viralité /
 
   <!-- 1. HEADER -->
   <!-- 2. LES CHIFFRES + ANALYSE DATA-ANALYSTE (chaque chiffre : traduction simple + verdict bon/à surveiller/mauvais) -->
+  <!-- 2b. TOP 3 NICHES (si aucun produit fourni : niches classées, priorité physique, on creuse la n°1) -->
   <!-- 3. GLOSSAIRE (acronymes expliqués : GMV, YoY, CAGR, DTC, commission, cookie...) -->
-  <!-- 4. TOP 3 PRODUITS (juste après les chiffres : lien TikTok + lien Amazon réels, commission moyenne sourcée) -->
+  <!-- 4. TOP 3 PRODUITS de la niche n°1 (fiche standard : hook + rémunération par plateforme + liens réels + 2 prompts créatifs en popup) -->
   <!-- 5. COMPARATIF DES PRODUITS (tableau + 1 graphique simple) -->
   <!-- 6. MATRICE CONCURRENTS / ANALYSE META ADS + TIKTOK ADS -->
   <!-- 7. CARTE DES ANGLES + WHITE SPACES -->
