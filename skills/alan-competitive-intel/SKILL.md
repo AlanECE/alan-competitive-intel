@@ -131,6 +131,10 @@ Critères de sélection pour retenir un produit :
 - Potentiel viral : contenu démonstratif, before/after, transformation visible
 - Pas de marché saturé (>20 annonceurs Evergreen = rouge)
 
+**Quand l'utilisateur demande une analyse de niche, analyser DIRECTEMENT de vraies pubs TikTok pour personnaliser les prompts créatifs** (pas seulement des patterns théoriques) :
+- **Mode Terminal** (Apify + `ffmpeg`) : récupérer des annonces de la niche via `scripts/scrape_tiktok_ads.py`, télécharger 3 à 5 vidéos (`videos[].url`, suivre la redirection 302 vers le CDN avec header `Referer: https://www.tiktok.com/`, les URLs expirent en quelques minutes donc télécharger juste après l'extraction), extraire des planches-contact (`ffmpeg ... fps=1/N,tile=4x2`), les **regarder**, et en tirer les patterns réels (cadrage, bandeau spa, produit tenu label-caméra en ouverture, démonstration sur la peau, regard, plan réaction). Injecter ces patterns dans les prompts et les citer.
+- **Mode Web App** : généralement **pas possible** (pas de téléchargement vidéo ni de `ffmpeg`). Le dire à l'utilisateur, et se rabattre sur les patterns sourcés (recherche) + les `coverImageUrl` des annonces.
+
 Chaque produit du top 3 suit le **format standard de fiche produit** (voir Étape 4 et `html-report-guide.md`) : hook, rémunération par plateforme (% × prix = gain), et deux prompts créatifs (photo + vidéo UGC).
 
 ---
