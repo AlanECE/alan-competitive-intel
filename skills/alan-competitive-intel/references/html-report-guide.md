@@ -8,12 +8,12 @@ Spécifications pour générer le rapport HTML autonome. CSS inline, JS embarqu�
 
 Objectif : **simple mais beau, lisible par un novice**. Si le skill `impeccable` est installé (`.agents/skills/impeccable`), suivre ses règles. Sinon, appliquer le résumé ci-dessous.
 
-**Thème clair par défaut** (plus accessible et plus simple qu'un thème sombre pour un débutant) :
-- Fond : `#f6f6f8` (gris très clair neutre, **pas** de crème/beige : c'est le défaut « IA » à éviter)
-- Surfaces : `#ffffff` · Bordures : `#e3e3ea`
-- Texte principal : `#1a1a21` (quasi-noir, fort contraste) · Texte secondaire : `#56565f`
-- Un seul accent franc : `#cf4329` (corail-rouge éditorial, pas le rose « beauté » cliché)
-- Couleurs sémantiques (verdicts data) : vert `#0f7048`, ambre `#8a5d00`, rouge `#b1372a`, chacune sur fond teinté clair
+**Deux thèmes obligatoires : clair ET sombre, avec un bouton de bascule.** Le rapport DOIT embarquer les deux et un bouton (🌙/☀️) en haut à droite.
+- Implémentation : toutes les couleurs en **variables CSS** dans `:root` (thème clair) + un bloc `html[data-theme="dark"]{...}` qui surcharge `--bg, --surface, --surface-2, --border, --ink, --muted, --accent, --good/--watch/--bad` et leurs fonds teintés.
+- Pour que les teintes s'adaptent, définir une variable `--mix` (`#ffffff` en clair, une surface foncée en sombre) et écrire les fonds doux en `color-mix(in srgb, var(--cat) 12%, var(--mix))` plutôt qu'avec `#fff` en dur.
+- Défaut = `prefers-color-scheme`, choix mémorisé dans `localStorage`. Le `<canvas>` Chart.js doit relire les couleurs (`getComputedStyle`) et se reconstruire au changement de thème.
+- Clair : fond `#f6f6f8` (neutre, **pas** crème/beige = défaut « IA »), surfaces `#ffffff`, encre `#1a1a21`, secondaire `#56565f`. Sombre : fond `~#0f0f14`, surface `~#16161d`, encre `~#ededf3`, secondaire `~#a4a4b2`.
+- Accent + couleurs sémantiques (vert/ambre/rouge pour les verdicts) déclinés dans les deux thèmes (versions un peu plus claires en mode sombre pour le contraste).
 
 **Typographie :**
 - Display (titres) : un serif éditorial (`'Fraunces'`, fallback Georgia). Corps : `system-ui, -apple-system, 'Segoe UI', sans-serif`. Max 3 familles.
@@ -39,7 +39,7 @@ Objectif : **simple mais beau, lisible par un novice**. Si le skill `impeccable`
 Ce rapport est destiné à des débutants. Trois règles non négociables :
 
 1. **Expliquer chaque acronyme / chiffre.** Après les chiffres de marché, prévoir un bloc « glossaire » qui définit en français simple tout sigle utilisé (GMV = Gross Merchandise Value = valeur totale des ventes brutes ; YoY = Year over Year = d'une année sur l'autre ; etc.). Ne jamais laisser un sigle non expliqué.
-2. **Analyser les chiffres comme un data-analyste.** Pour chaque chiffre clé, ajouter une colonne ou un encart « verdict » : est-ce bon ou mauvais, et pourquoi, en une phrase claire. Exemple : « +6 % de croissance trimestrielle = solide, car c'est ~2× la croissance de l'économie générale ». Donner du sens, pas juste le chiffre brut.
+2. **Analyser les chiffres comme un data-analyste, EN SYNERGIE.** Donner un verdict par chiffre clé (« bon / à surveiller / mauvais » + pourquoi en une phrase), MAIS surtout une **lecture d'ensemble** : un bouquet de métriques se lit ensemble, pas une par une. Croiser les chiffres entre eux (croissance + part de canal + commission + saturation + tendance) et finir par une **conclusion synthétique** (« pris ensemble, ces chiffres disent que... »). Les valeurs et exemples ici sont illustratifs : extraire les **chiffres réels actuels** de la période en cours, jamais des nombres recopiés.
 3. **Top 3 produits juste après les chiffres**, avec, pour chacun :
    - un **lien TikTok** (page hashtag, ex. `https://www.tiktok.com/tag/{produit}`) et un **lien Amazon réel**.
      - *Mode Terminal :* Lightpanda → `lightpanda fetch --dump html "https://www.amazon.com/s?k={produit}"` puis extraire le premier `/dp/{ASIN}` → `https://www.amazon.com/dp/{ASIN}`. Lightpanda fonctionne sur Amazon (testé).
@@ -51,7 +51,7 @@ Puis un **comparatif** des produits (tableau notes 1-5 sur revenus / viralité /
 ### Hiérarchie et couleur des fiches produits (corrige des défauts fréquents)
 
 - **Le titre de champ et le contenu ne doivent jamais avoir le même style.** Le label (« Le problème qu'il résout », « Rémunération moyenne »...) doit trancher nettement : petit, en MAJUSCULES, en gras, dans la couleur de catégorie. Le contenu : encre foncée, taille de lecture (~1rem), police de corps. On distingue label et réponse au premier coup d'œil.
-- **Une couleur par catégorie** (`--cat`), portée par le rang, le filet supérieur, les labels et les liens : anti-acné corail `#cf4329`, dupe luxe / maquillage violet `#7c3aed`, routine / soin teal `#0e7c86`, appareil / premium or `#b5790a`. Rendre la page vivante avec ces couleurs, sans tomber dans l'arc-en-ciel.
+- **Une couleur par catégorie de produit** (`--cat`, en `style` inline sur chaque fiche), portée par le rang, le filet supérieur, les labels et les liens. Palette générique de 4-5 teintes, **assignée dynamiquement selon les catégories réelles de la niche analysée** (pas un mapping figé) : par ex. corail `#cf4329`, violet `#7c3aed`, teal `#1597a3`, vert `#1f9d68`, or `#c2902f`. Choisir des teintes lisibles en clair ET en sombre. Rendre la page vivante, sans tomber dans l'arc-en-ciel.
 - **Liens d'action légers**, pas de gros boutons pleins lourds : contour fin dans la couleur de catégorie, un seul lien rempli au maximum par fiche.
 
 ### Contenu standard d'une fiche produit (identique d'une niche à l'autre)
@@ -84,7 +84,7 @@ Choisir le format d'après ce qui **convertit réellement** pour ce type de prod
 - objet tech (casque, gadget) → **hypermotion + jeux de lumière**, macro, ASMR.
 Réfs utiles : la démonstration apparaît dans ~4/10 pubs beauté gagnantes, l'UGC dans ~37 % des meilleures pubs (Evolut, Top Beauty Ads 2026).
 
-**Bonus (Mode Terminal, optionnel) — personnaliser les prompts à partir de vraies pubs TikTok.** Si un token Apify est fourni et que `ffmpeg` est disponible : récupérer quelques annonces beauté réelles via `scripts/scrape_tiktok_ads.py` (chaque annonce expose `videos[].url`), télécharger 3 à 5 vidéos, extraire des images clés avec `ffmpeg -i video.mp4 -vf fps=1/2 frame_%02d.jpg`, puis observer les images pour repérer les patterns récurrents : cadrage (selfie buste), façon de tenir le produit (label caméra), direction du regard, décor, rythme. Injecter ces patterns réels dans les prompts (« pattern repéré sur les pubs qui tournent : ... ») et citer la source. En Mode Web App ou sans ffmpeg : se rabattre sur les patterns sourcés de la recherche (ci-dessus) et les `coverImageUrl` des annonces.
+**Bonus (Mode Terminal, optionnel) : personnaliser les prompts à partir de vraies pubs TikTok de la niche analysée.** Si un token Apify est fourni et que `ffmpeg` est disponible : récupérer quelques annonces de la niche via `scripts/scrape_tiktok_ads.py` (chaque annonce expose `videos[].url`). Les URLs `library.tiktok.com/api/v1/cdn/...` redirigent (302) vers le CDN et **expirent en quelques minutes** : télécharger juste après l'extraction, en suivant la redirection avec un header `Referer: https://www.tiktok.com/`. Extraire des planches-contact (`ffmpeg -i video.mp4 -vf "fps=1/N,scale=200:-1,tile=4x2" -frames:v 1 sheet.jpg`), **regarder les images**, repérer les patterns récurrents (cadrage selfie buste, façon de tenir le produit label-caméra, direction du regard, décor, plan réaction), les injecter dans les prompts et citer la source. En Mode Web App ou sans ffmpeg : se rabattre sur les patterns sourcés de la recherche et les `coverImageUrl` des annonces.
 
 ---
 
@@ -96,7 +96,7 @@ Réfs utiles : la démonstration apparaît dans ~4/10 pubs beauté gagnantes, l'
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analyse Concurrentielle — {PRODUCT_NAME}</title>
+  <title>Analyse Concurrentielle · {PRODUCT_NAME}</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>/* CSS COMPLET INLINE */</style>
 </head>
