@@ -69,8 +69,10 @@ Chaque produit du Top 3 contient, dans cet ordre :
 - Bouton : `<button class="prompt-btn" data-key="{produit}-photo"><span class="plus">+</span></button>` (et `-video`).
 - Un seul `<dialog class="modal" id="promptModal">` réutilisable, avec : titre, type, encart « Pourquoi ce format » (source), `<textarea>` éditable (= **modifier**), bouton **Copier** (clipboard API + fallback `execCommand`), bouton Fermer. Fermeture aussi au clic sur le backdrop.
 - Données dans un objet JS `PROMPTS` : `{ '{produit}-photo': {title, type, why, text}, ... }`. Remplir le textarea avec `.value` au clic.
-- **Prompt photo** = prompt d'image à générer (outil type GPT Image 2 / Nano Banana), 9:16, edge-to-edge, sans watermark.
-- **Prompt vidéo UGC** = script de tournage complet : format + durée + ratio, décor, lumière, caméra, regard, look, puis un découpage plan par plan avec **ce que la créatrice DIT mot à mot** (dialogue en anglais si cible US), le texte à l'écran, et un conseil clé.
+- **Prompt photo** = prompt d'image à générer (outil type GPT Image 2 / Nano Banana / Higgsfield), 9:16, edge-to-edge, sans watermark, **sans texte ni graphisme** (les modèles rendent mal le texte).
+- **Prompt vidéo UGC** = **un seul prompt pour un modèle vidéo IA de 15s max** (Veo 3 / Kling / Higgsfield), pas un script multi-plans à découper. Une scène continue de 15s. Le prompt décrit, dans cet ordre : format (UGC selfie vertical 9:16, shot-on-phone, micro-shake), sujet (âge, peau réaliste, cheveux, tenue), puis le déroulé seconde par seconde (0-4s / 4-9s / 9-15s) avec **ce que la créatrice DIT mot à mot** (dialogue parlé, lip-sync, en anglais si cible US), le **regard** (caméra vs produit vs peau, et quand il décroche), la **façon de tenir le produit** (label vers la caméra, prise entre les doigts, jamais devant le visage), la lumière, l'optique (28-35mm phone-lens), l'audio (voix seule, pas de musique).
+- **Précision = argent.** Ces modèles sont payants à la génération : tout détailler (regard, micro-expressions, prise en main, lumière, optique) pour ne pas gâcher de crédits.
+- **Sans texte à l'écran.** Ne jamais demander au modèle d'incruster du texte ou des sous-titres (ligne `NEGATIVE: no on-screen text, no captions, no graphics`). Le dialogue PARLÉ est autorisé, le texte incrusté non.
 
 ### Sourcer le format de chaque créatif (pas de magie)
 
@@ -81,6 +83,8 @@ Choisir le format d'après ce qui **convertit réellement** pour ce type de prod
 - curiosité produit → **unboxing** ;
 - objet tech (casque, gadget) → **hypermotion + jeux de lumière**, macro, ASMR.
 Réfs utiles : la démonstration apparaît dans ~4/10 pubs beauté gagnantes, l'UGC dans ~37 % des meilleures pubs (Evolut, Top Beauty Ads 2026).
+
+**Bonus (Mode Terminal, optionnel) — personnaliser les prompts à partir de vraies pubs TikTok.** Si un token Apify est fourni et que `ffmpeg` est disponible : récupérer quelques annonces beauté réelles via `scripts/scrape_tiktok_ads.py` (chaque annonce expose `videos[].url`), télécharger 3 à 5 vidéos, extraire des images clés avec `ffmpeg -i video.mp4 -vf fps=1/2 frame_%02d.jpg`, puis observer les images pour repérer les patterns récurrents : cadrage (selfie buste), façon de tenir le produit (label caméra), direction du regard, décor, rythme. Injecter ces patterns réels dans les prompts (« pattern repéré sur les pubs qui tournent : ... ») et citer la source. En Mode Web App ou sans ffmpeg : se rabattre sur les patterns sourcés de la recherche (ci-dessus) et les `coverImageUrl` des annonces.
 
 ---
 
