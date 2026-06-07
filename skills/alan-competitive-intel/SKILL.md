@@ -26,6 +26,21 @@ Toutes les sources de données sont **publiques et gratuites** :
 | SimilarWeb public | Trafic estimé, canaux | ❌ Aucune |
 | TikTok OEmbed | Métadonnées vidéos | ❌ Aucune |
 | Crunchbase / LinkedIn / Presse | Signaux business | ❌ Aucune |
+| **Apify TikTok Ads** (optionnel) | Impressions, reach, régions, ciblage, % créateurs — données réelles UE/DSA | ⚙️ Token Apify fourni au runtime |
+
+> **Lightpanda reste la méthode privilégiée** pour les pages JS-lourdes (Meta Ads Library, SimilarWeb) : ~16× moins de RAM et ~9× plus rapide que Chrome headless. Voir `references/lightpanda-guide.md`. Aucune installation obligatoire — fallback WebFetch/WebSearch automatique.
+
+### Option avancée — Métriques publicitaires TikTok RÉELLES (Apify, opt-in)
+
+Le skill sait exploiter l'actor Apify **`silva95gustavo/tiktok-ads-scraper`** pour récupérer de vraies données de la [TikTok Commercial Content Library](https://library.tiktok.com/ads) (impressions, reach, régions, ciblage démographique, part créateurs/affiliés).
+
+**Plug & play piloté par l'utilisateur :**
+- Si l'utilisateur **mentionne ou fournit un token Apify** (dans son message, ou via `APIFY_TOKEN` dans l'environnement), le skill l'utilise automatiquement en lançant `scripts/scrape_tiktok_ads.py`.
+- **Aucun token n'est jamais stocké dans ce repo.** Le token est lu au runtime depuis `APIFY_TOKEN` — fourni par l'utilisateur, jamais codé en dur, jamais commité (repo public).
+- Sans token → le script se rabat proprement sur un mode `no_token` avec lien manuel. Le skill reste 100 % plug-and-play et gratuit par défaut.
+
+⚠️ **Périmètre = UE/EEE (transparence DSA), pas USA** → lire les impressions comme un signal de stratégie créative, pas un volume US.
+⚠️ **Ne pas appliquer les Winner Rules ici** : `firstShown`/`lastShown` sont des fenêtres de reporting DSA courtes, pas une durée de campagne. Les Winner Rules Hero/Evergreen sont réservées à la Meta Ads Library.
 
 **Principe absolu : aucun contenu sans métrique. Aucun angle sans preuve de 60+ jours actifs sur au moins 2 concurrents.**
 
@@ -93,7 +108,7 @@ Identifier le mode (A ou B) à partir du message utilisateur. Si Mode A, vérifi
 
 ### Étape 2 — Scraping et recherche (lancer en parallèle si subagents disponibles)
 
-Lire `references/lightpanda-guide.md` pour choisir la méthode de scraping optimale.
+Lire `references/lightpanda-guide.md` pour choisir la méthode de scraping optimale. **Lightpanda est la méthode privilégiée et la plus efficace** pour les pages JS-lourdes (Meta Ads Library, SimilarWeb) — bien plus rapide et léger que Chrome headless. Si l'utilisateur a fourni un token Apify, ajouter la Tâche 2c-bis pour des métriques TikTok Ads réelles.
 
 **Tâche 2a — Identification des concurrents (Mode A)**
 
@@ -125,6 +140,24 @@ Données accessibles sans auth : hashtags tendance, topics, sons (post_count, vi
 Données non disponibles sans compte TikTok Ads : CTR des Top Ads, impressions, budget → afficher "Données indisponibles — compte TikTok Ads requis".
 
 Interpréter les hashtags tendance comme proxy d'angles : hashtag en hausse = angle émergent à investiguer.
+
+**Tâche 2c-bis — TikTok Ads Library RÉELLE (Apify, seulement si token fourni)**
+
+Activer cette tâche **uniquement si l'utilisateur a fourni un token Apify** (mentionné dans son message ou présent dans `APIFY_TOKEN`).
+
+Lancer `scripts/scrape_tiktok_ads.py --advertisers "{Concurrent1,Concurrent2,...}" --region all`.
+
+Le script lit `APIFY_TOKEN` au runtime (jamais codé en dur) et retourne, par annonceur :
+- `adCount`, `distinctAdvertisers` → intensité concurrentielle
+- `creatorSharePct` → part d'annonces tenues par des créateurs/affiliés = **preuve de monétisation affiliée active**
+- `imprSampleMid` + `topRegions` → reach réel (UE)
+- `topAges`, `genders`, `avgAudience` → ciblage démographique réel
+
+Interprétation :
+- Part créateurs élevée (≥90 %) → produit déjà monétisé par des affiliés indépendants → modèle reproductible.
+- 1 seul annonceur dominant → faible concurrence (white space) OU marché verrouillé par un acteur.
+- ⚠️ Données UE/DSA — signal créatif, pas volume US. Ne pas appliquer Hero/Evergreen (voir lightpanda-guide.md).
+
 **Tâche 2d — Métriques revenus et trafic**
 
 Lire `references/performance-scoring.md`.
@@ -225,4 +258,7 @@ Retourner :
 - TikTok Creative Center API publique (no-auth) : `https://ads.tiktok.com/business/creativecenter/api/public/trend/`
 - TikTok OEmbed : `https://www.tiktok.com/oembed`
 
-Sources interdites : données derrière login, APIs payantes, scraping avec bypass de rate limits.
+**Source optionnelle pilotée par token (fourni par l'utilisateur au runtime, jamais commité) :**
+- Apify `silva95gustavo/tiktok-ads-scraper` → TikTok Commercial Content Library (`https://library.tiktok.com/ads`). Activée seulement si `APIFY_TOKEN` est fourni. Données UE/DSA réelles (impressions, reach, ciblage). Cette source est une API payante côté Apify mais reste conforme : la clé n'est jamais stockée dans le repo public — l'utilisateur fournit la sienne.
+
+Sources interdites : données derrière login non autorisé, scraping avec bypass de rate limits, et **tout token/clé API codé en dur dans le repo** (le repo est public).
